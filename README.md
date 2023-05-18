@@ -1,9 +1,9 @@
 # MIDI-Sandbox
 
-# node 16
+node 16
 
-# using jzz.js libraries
+using jzz.js libraries
 
-# to run, clone and then NPM install
+to run, clone and then NPM install
 
-# then preview with npm run dev
+then preview with npm run dev
