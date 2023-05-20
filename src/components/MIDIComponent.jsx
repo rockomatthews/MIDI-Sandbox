@@ -10,19 +10,31 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 
 const MIDIComponent = () => {
-  const AudioContext = window.AudioContext || window.AudioContext;
-
-  const audioContext = new AudioContext();
-  const synth = new Tone.Synth().toDestination();
+  const [audioContext, setAudioContext] = useState(null);
+  const [synth, setSynth] = useState(null);
   const [midiAccess, setMidiAccess] = useState(null);
   const [open, setOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState('');
 
   const handleOpen = async () => {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioContext();
+    const synth = new Tone.Synth().connect(audioContext.destination);
     await Tone.start();
+    await audioContext.resume(); // Add this line
+
+    setAudioContext(audioContext);
+    setSynth(synth);
+
     console.log('audio is ready');
     setOpen(true);
+  };
+
+
+  const startAudioContext = async () => {
+    await Tone.start();
+    console.log('audio is ready');
   };
 
   const handleClose = () => {
@@ -32,19 +44,19 @@ const MIDIComponent = () => {
 
   const handleRecording = () => {
     setIsRecording(!isRecording);
-    // Add your recording logic here
+    // Add your recording logic here  
   };
 
   const saveRecording = () => {
-    // Add your saving logic here
+    // Add your saving logic here  
   };
 
   const clearRecording = () => {
-    // Add your clear logic here
+    // Add your clear logic here  
   };
 
   const playbackRecording = () => {
-    // Add your playback logic here
+    // Add your playback logic here  
   };
 
   const handleChange = (event) => {
@@ -85,45 +97,71 @@ const MIDIComponent = () => {
       }
     };
 
-    return () => synth.dispose();
+    return () => {
+      if (synth) {
+        synth.dispose();
+      }
+    };
   }, []);
 
   return (
     <div>
       <h1>Web MIDI API Component</h1>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}
+        sx={{
+          bgcolor: 'background.default', // set the background color
+          color: 'text.primary',
+          borderColor: 'text.primary', // set the border color
+          '&:hover': {
+            boxShadow: '0 0 10px 3px rgba(0, 123, 255, 0.5)', // add a blue glow on hover
+          },
+        }}
+      >
         Select MIDI Device
       </Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="select-midi-device"
+        aria-describedby="select-a-midi-device-from-the-list"
       >
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box
+          sx={{
+            p: 2,  // padding
+            mt: 1, // margin-top
+            bgcolor: 'background.paper',
+            borderRadius: 'borderRadius',
+            boxShadow: 1,
+          }}
+        >
+          <h2>Select MIDI Device</h2>
           <FormControl fullWidth>
-            <InputLabel id="select-midi-device">Select MIDI Device</InputLabel>
+            <InputLabel id="select-midi-device-label">MIDI Device</InputLabel>
             <Select
-              labelId="select-midi-device"
+              labelId="select-midi-device-label"
               id="select-midi-device"
               value={selectedDevice}
-              label="Select MIDI Device"
+              label="MIDI Device"
               onChange={handleChange}
             >
-              {midiAccess && Array.from(midiAccess.inputs.values()).map((input, index) => (
-                <MenuItem value={index} key={index}>{input.name}</MenuItem>
+              {midiAccess && Array.from(midiAccess.inputs.values()).map((input) => (
+                <MenuItem key={input.id} value={input.id}>{input.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Button variant="contained" color={isRecording ? "secondary" : "primary"} onClick={handleRecording} sx={{ mt: 2 }}>
-            {isRecording ? "Stop Recording" : "Start Recording"}
+          <Button variant="contained" color="primary" onClick={handleRecording}>
+            {isRecording ? 'Stop Recording' : 'Start Recording'}
           </Button>
-          <Button variant="contained" color="primary" onClick={saveRecording} sx={{ mt: 2 }}>
-            Save as .wav
+          <Button variant="contained" color="primary" onClick={saveRecording}>
+            Save Recording
           </Button>
-          <Button variant="contained" color="primary" onClick={clearRecording} sx={{ mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={clearRecording}>
             Clear Recording
           </Button>
-          <Button variant="contained" color="primary" onClick={playbackRecording} sx={{ mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={playbackRecording}>
             Playback Recording
           </Button>
         </Box>
@@ -132,4 +170,4 @@ const MIDIComponent = () => {
   );
 };
 
-export default MIDIComponent;
+export default MIDIComponent;  
