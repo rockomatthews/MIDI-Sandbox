@@ -5,10 +5,14 @@ export const ToneContext = createContext();
 
 export const ToneProvider = ({ children }) => {
     const [synth, setSynth] = useState(null);
+    const [isStarted, setIsStarted] = useState(false);
 
     const startAudio = async () => {
-        await Tone.start();
-        setSynth(new Tone.Synth().toDestination());
+        if (!isStarted) {
+            await Tone.start();
+            setSynth(new Tone.Synth().toDestination());
+            setIsStarted(true);
+        }
     };
 
     return (

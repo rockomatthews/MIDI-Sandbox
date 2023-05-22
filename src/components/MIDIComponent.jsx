@@ -12,21 +12,16 @@ import InputLabel from '@mui/material/InputLabel';
 
 const MIDIComponent = () => {
   const { synth, startAudio } = useContext(ToneContext);
-  const [midiAccess, setMidiAccess] = useState(null);
   const [open, setOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState('');
 
-  const startAudio = async () => {
-    await Tone.start();
-    console.log('Audio started');
-  }
-
   const handleOpen = async () => {
-    await Tone.start(); // This line starts the audio context.
+    await startAudio(); // Call startAudio here
     console.log('audio is ready');
     setOpen(true);
   };
+
 
   const handleClose = () => {
     setOpen(false);
@@ -101,13 +96,10 @@ const MIDIComponent = () => {
   return (
     <div>
       <h1>Web MIDI API Component</h1>
-      {/* <button onClick={startAudio}>Start Audio</button>
-      <Button variant="contained" color="primary" onClick={async () => {
-        await Tone.start();
-        setSynth(new Tone.Synth().toDestination());
-      }}>
+      <button onClick={startAudio}>Start Audio</button>
+      <Button variant="contained" color="primary" onClick={handleOpen}>
         Select MIDI Device
-      </Button> */}
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}

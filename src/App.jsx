@@ -1,6 +1,6 @@
 // import React from 'react'
 import './App.css'
-import { ToneProvider } from './context/ToneContext.js';
+import { ToneProvider } from './context/ToneContext';
 import MIDIComponent from './components/MIDIComponent'
 
 
