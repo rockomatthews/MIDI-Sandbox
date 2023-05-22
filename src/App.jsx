@@ -1,20 +1,23 @@
 // import React from 'react'
 import './App.css'
+import { ToneProvider } from './context/ToneContext.js';
 import MIDIComponent from './components/MIDIComponent'
 
 
 function App() {
-  
+
 
   return (
-    <>    
+    <>
       <div className='logo'>
         <h1>MIDI SandBox</h1>
       </div>
       <div>
-        <MIDIComponent />
+        <ToneProvider>
+          <MIDIComponent />
+        </ToneProvider>
       </div>
-     
+
     </>
   )
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { ToneContext } from '../context/ToneContext';
 import * as Tone from 'tone';
 import { Midi } from 'tone';
 import Button from '@mui/material/Button';
@@ -10,21 +11,28 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 
 const MIDIComponent = () => {
-  const synth = new Tone.Synth().toDestination();
+  const { synth, startAudio } = useContext(ToneContext);
   const [midiAccess, setMidiAccess] = useState(null);
   const [open, setOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState('');
 
-  const handleOpen = async () => {
+  const startAudio = async () => {
     await Tone.start();
+    console.log('Audio started');
+  }
+
+  const handleOpen = async () => {
+    await Tone.start(); // This line starts the audio context.
     console.log('audio is ready');
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
-    synth.triggerRelease();
+    if (synth) {
+      synth.triggerRelease();
+    }
   };
 
   const handleRecording = () => {
@@ -64,6 +72,7 @@ const MIDIComponent = () => {
     }
 
     const getMIDIMessage = (message) => {
+      if (synth === null) return;
       let command = message.data[0];
       let note = message.data[1];
       let velocity = (message.data.length > 2) ? message.data[2] : 0;
@@ -82,15 +91,23 @@ const MIDIComponent = () => {
       }
     };
 
-    return () => synth.dispose();
+    return () => {
+      if (synth) {
+        synth.dispose();
+      }
+    };
   }, []);
 
   return (
     <div>
       <h1>Web MIDI API Component</h1>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
+      {/* <button onClick={startAudio}>Start Audio</button>
+      <Button variant="contained" color="primary" onClick={async () => {
+        await Tone.start();
+        setSynth(new Tone.Synth().toDestination());
+      }}>
         Select MIDI Device
-      </Button>
+      </Button> */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -130,3 +147,6 @@ const MIDIComponent = () => {
 };
 
 export default MIDIComponent;
+
+
+
